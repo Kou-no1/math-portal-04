@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>先生のためのアプリ集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --border: #e5e3dd;
+    --border-hover: #c8c5bc;
+    --text-primary: #1a1a18;
+    --text-secondary: #6b6a65;
+    --text-muted: #9e9c97;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-pill: 999px;
+  }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 0 0 4rem;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+  }
+  .header h1 {
+    font-size: clamp(20px, 4vw, 26px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .header p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+
+  /* ── Main container ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 0;
+  }
+
+  /* ── Filter bar ── */
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1.75rem;
+  }
+  .filter-btn {
+    padding: 6px 16px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 400;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .filter-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+  .filter-btn.active {
+    background: var(--text-primary);
+    color: #fff;
+    border-color: var(--text-primary);
+  }
+
+  /* ── Section label ── */
+  .section-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 2rem;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+
+  /* ── Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 10px;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.15rem 1rem;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  }
+  .card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+  }
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .tag {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .card-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    line-height: 1.4;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ── Category colors ── */
+  .cat-timer   .icon-wrap { background: #dff0ff; }
+  .cat-lottery .icon-wrap { background: #ede9fe; }
+  .cat-group   .icon-wrap { background: #dcfce7; }
+  .cat-class   .icon-wrap { background: #fef3c7; }
+  .cat-admin   .icon-wrap { background: #ffe4e6; }
+  .cat-event    .icon-wrap { background: #d1fae5; }
+  .cat-facility  .icon-wrap { background: #e0f2fe; }
+  .cat-homeroom  .icon-wrap { background: #fce7f3; }
+
+  .tag-timer    { background: #dff0ff; color: #1e60a8; }
+  .tag-lottery  { background: #ede9fe; color: #5b21b6; }
+  .tag-group    { background: #dcfce7; color: #166534; }
+  .tag-class    { background: #fef3c7; color: #92400e; }
+  .tag-admin    { background: #ffe4e6; color: #9f1239; }
+  .tag-event    { background: #d1fae5; color: #065f46; }
+  .tag-facility { background: #e0f2fe; color: #0369a1; }
+  .tag-homeroom { background: #fce7f3; color: #9d174d; }
+
+  /* ── Hidden ── */
+  .card.hidden { display: none; }
+  .section-block.hidden { display: none; }
+
+  /* ── Sub section ── */
+  .sub-section { margin-top: 1rem; }
+  .sub-section-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    padding-left: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sub-section-label::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 12px;
+    background: #fbbf24;
+    border-radius: 2px;
+  }
+  .grade-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .grade-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .grade-btn:hover {
+    border-color: #fbbf24;
+    box-shadow: 0 2px 8px rgba(251,191,36,0.2);
+    transform: translateY(-1px);
+  }
+  .grade-btn .grade-num {
+    width: 22px;
+    height: 22px;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .filter-btn { font-size: 12px; padding: 5px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏫 先生のためのアプリ集</h1>
+  <p>カテゴリを選んで、使いたいアプリを見つけてください</p>
+</div>
+
+<div class="container">
+
+  <!-- Filter -->
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all">すべて</button>
+    <button class="filter-btn" data-filter="homeroom">🐉 学級経営</button>
+    <button class="filter-btn" data-filter="facility">🏫 施設管理</button>
+    <button class="filter-btn" data-filter="timer">⏱ タイマー</button>
+    <button class="filter-btn" data-filter="lottery">🎲 抽選</button>
+    <button class="filter-btn" data-filter="class">📚 授業</button>
+    <button class="filter-btn" data-filter="admin">📋 校務</button>
+    <button class="filter-btn" data-filter="event">🏃 校外学習</button>
+  </div>
+
+  <!-- 施設管理 -->
+  <div class="section-block" data-section="facility">
+    <div class="section-label">施設管理</div>
+    <div class="grid">
+      <a class="card cat-facility" data-cat="facility" href="https://kou-no1.github.io/room_booking/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🏫</div>
+          <span class="tag tag-facility">施設管理</span>
+        </div>
+        <div class="card-title">特別教室予約システム</div>
+        <div class="card-desc">優先・予約クラスを一覧管理</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 学級経営 -->
+  <div class="section-block" data-section="homeroom">
+    <div class="section-label">学級経営</div>
+    <div class="grid">
+      <a class="card cat-homeroom" data-cat="homeroom" href="https://kou-no1.github.io/classmon/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🐉</div>
+          <span class="tag tag-homeroom">学級経営</span>
+        </div>
+        <div class="card-title">そだて！クラスモン</div>
+        <div class="card-desc">クラスみんなでクエストにちょうせんして、いっしょにキャラクターをそだてよう！</div>
+      </a>
+      <a class="card cat-homeroom" data-cat="homeroom" href="https://kou-no1.github.io/grouping/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">👥</div>
+          <span class="tag tag-homeroom">学級経営</span>
+        </div>
+        <div class="card-title">グルーピング</div>
+        <div class="card-desc">名簿貼り付け・Excel読み込み対応。PDF出力まで完結</div>
+      </a>
+      <a class="card cat-homeroom" data-cat="homeroom" href="https://kou-no1.github.io/Sekigae/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">💺</div>
+          <span class="tag tag-homeroom">学級経営</span>
+        </div>
+        <div class="card-title">席替えアプリ</div>
+        <div class="card-desc">NGペア・固定席・エリア指定・シークレットモード搭載。A4印刷対応</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- タイマー -->
+  <div class="section-block" data-section="timer">
+    <div class="section-label">タイマー</div>
+    <div class="grid">
+      <a class="card cat-timer" data-cat="timer" href="https://kou-no1.github.io/hachiware_timer/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🐱</div>
+          <span class="tag tag-timer">タイマー</span>
+        </div>
+        <div class="card-title">はちわれタイマー</div>
+        <div class="card-desc">数字ボタンで直感操作。かわいいはちわれが動く</div>
+      </a>
+      <a class="card cat-timer" data-cat="timer" href="https://kou-no1.github.io/UFO_Timer/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">👽</div>
+          <span class="tag tag-timer">タイマー</span>
+        </div>
+        <div class="card-title">UFOタイマー</div>
+        <div class="card-desc">ミッションをコンプリートせよ！</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 抽選 -->
+  <div class="section-block" data-section="lottery">
+    <div class="section-label">抽選・ビンゴ</div>
+    <div class="grid">
+      <a class="card cat-lottery" data-cat="lottery" href="https://kou-no1.github.io/gorilla_draw/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🦍</div>
+          <span class="tag tag-lottery">抽選</span>
+        </div>
+        <div class="card-title">ゴリラドロー</div>
+        <div class="card-desc">母数を一発選択。派手な演出で結果発表。履歴表示あり</div>
+      </a>
+      <a class="card cat-lottery" data-cat="lottery" href="https://kou-no1.github.io/mgical_cat_draw/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🪄</div>
+          <span class="tag tag-lottery">抽選</span>
+        </div>
+        <div class="card-title">マジカルキャットドロー</div>
+        <div class="card-desc">しろねこが占う本格抽選アプリ</div>
+      </a>
+      <a class="card cat-lottery" data-cat="lottery" href="https://kou-no1.github.io/UFO_draw/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">👽</div>
+          <span class="tag tag-lottery">抽選</span>
+        </div>
+        <div class="card-title">UFOドロー</div>
+        <div class="card-desc">宇宙人が抽選する個性派アプリ</div>
+      </a>
+      <a class="card cat-lottery" data-cat="lottery" href="https://kou-no1.github.io/Bingo/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🎯</div>
+          <span class="tag tag-lottery">抽選</span>
+        </div>
+        <div class="card-title">ドキドキ BINGO</div>
+        <div class="card-desc">ビンゴルーレットアプリ</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 授業 -->
+  <div class="section-block" data-section="class">
+    <div class="section-label">授業</div>
+    <div class="grid">
+      <a class="card cat-class" data-cat="class" href="https://kou-no1.github.io/cocoro_meter/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">❤️</div>
+          <span class="tag tag-class">授業</span>
+        </div>
+        <div class="card-title">道徳心情メーター</div>
+        <div class="card-desc">集計＆マッピング。ミライシードにない機能。出席番号で送信</div>
+      </a>
+      <a class="card cat-class" data-cat="class" href="https://kou-no1.github.io/hidden_hand/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🙋</div>
+          <span class="tag tag-class">授業</span>
+        </div>
+        <div class="card-title">「分からない」隠し挙手</div>
+        <div class="card-desc">端末から先生だけに「分からない」を送信。つまずきポイントを早期発見</div>
+      </a>
+      <a class="card cat-class" data-cat="class" href="https://kou-no1.github.io/rika-navi/index.html" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🔬</div>
+          <span class="tag tag-class">授業</span>
+        </div>
+        <div class="card-title">理科問題解決ナビ</div>
+        <div class="card-desc">理科の問題解決の流れをナビゲート</div>
+      </a>
+      <a class="card cat-class" data-cat="class" href="https://kou-no1.github.io/taiiku-navi/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🤸</div>
+          <span class="tag tag-class">授業</span>
+        </div>
+        <div class="card-title">体育ナビ</div>
+        <div class="card-desc">鉄棒・マット運動などの技能を段階的にナビゲート</div>
+      </a>
+    </div>
+
+    <!-- 小カテゴリ：算数アタック問題 -->
+    <div class="sub-section">
+      <div class="sub-section-label">算数アタック問題 — 習熟度別で学力の向上・定着を図る</div>
+      <div class="grade-grid">
+        <a class="grade-btn" href="https://kou-no1.github.io/math-portal-01/" target="_blank"><span class="grade-num">1</span>1年生</a>
+        <a class="grade-btn" href="https://kou-no1.github.io/math-portal-02/" target="_blank"><span class="grade-num">2</span>2年生</a>
+        <a class="grade-btn" href="https://kou-no1.github.io/math-portal-03/" target="_blank"><span class="grade-num">3</span>3年生</a>
+        <a class="grade-btn" href="https://kou-no1.github.io/math-portal-04/" target="_blank"><span class="grade-num">4</span>4年生</a>
+        <a class="grade-btn" href="https://kou-no1.github.io/math-portal-05/" target="_blank"><span class="grade-num">5</span>5年生</a>
+        <a class="grade-btn" href="https://kou-no1.github.io/math-portal-06/" target="_blank"><span class="grade-num">6</span>6年生</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 校外学習 -->
+  <div class="section-block" data-section="event">
+    <div class="section-label">校外学習</div>
+    <div class="grid">
+      <a class="card cat-event" data-cat="event" href="https://kou-no1.github.io/kougai_check/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">📍</div>
+          <span class="tag tag-event">校外学習</span>
+        </div>
+        <div class="card-title">チェックポイント管理</div>
+        <div class="card-desc">引率教員間でCP通過をリアルタイム一覧管理</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 校務 -->
+  <div class="section-block" data-section="admin">
+    <div class="section-label">校務・ツール</div>
+    <div class="grid">
+      <a class="card cat-admin" data-cat="admin" href="https://docx2pdf-c04c.onrender.com/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">📄</div>
+          <span class="tag tag-admin">校務</span>
+        </div>
+        <div class="card-title">DOCX → PDF 変換</div>
+        <div class="card-desc">WordファイルをPDFに高品質変換。ドラッグ＆ドロップで複数ファイル同時対応</div>
+      </a>
+      <a class="card cat-admin" data-cat="admin" href="https://kou-no1.github.io/masume/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">📝</div>
+          <span class="tag tag-admin">校務</span>
+        </div>
+        <div class="card-title">マス目・罫線ジェネレーター</div>
+        <div class="card-desc">宿題や授業プリントをすぐ作成・印刷</div>
+      </a>
+      <a class="card cat-admin" data-cat="admin" href="https://docs.google.com/spreadsheets/d/1jL5ci3mFowWhXLy29J38WaXiCGtX58rPzQQgZOtv7ic/edit?gid=377669968#gid=377669968" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🔀</div>
+          <span class="tag tag-admin">校務</span>
+        </div>
+        <div class="card-title">当番表ランダム作成</div>
+        <div class="card-desc">ボタン一つで当番表を作り直し。月交代に便利</div>
+      </a>
+      <a class="card cat-admin" data-cat="admin" href="https://docs.google.com/spreadsheets/d/1FCkUxXqqes13Pl91zmXugz5dqac0KOXfjQhMn7RdiJw/edit?gid=377669968#gid=377669968" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🔄</div>
+          <span class="tag tag-admin">校務</span>
+        </div>
+        <div class="card-title">当番表ローテーション</div>
+        <div class="card-desc">上下ボタンでローテーション。シンプルに使いたい人向け</div>
+      </a>
+      <a class="card cat-admin" data-cat="admin" href="https://kou-no1.github.io/kirinuki/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">✂️</div>
+          <span class="tag tag-admin">校務</span>
+        </div>
+        <div class="card-title">顔写真切り抜き 4:3</div>
+        <div class="card-desc">一括切り抜き・保存。ブラウザ内完結で流出の心配なし</div>
+      </a>
+      <a class="card cat-admin" data-cat="admin" href="https://kou-no1.github.io/shukusho/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🖼️</div>
+          <span class="tag tag-admin">校務</span>
+        </div>
+        <div class="card-title">画像縮小専門</div>
+        <div class="card-desc">割合を設定して一括リサイズ・保存</div>
+      </a>
+      <a class="card cat-admin" data-cat="admin" href="https://kou-no1.github.io/PDF_renketu/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">📎</div>
+          <span class="tag tag-admin">校務</span>
+        </div>
+        <div class="card-title">PDF連結くん</div>
+        <div class="card-desc">複数PDFをまとめて結合</div>
+      </a>
+      <a class="card cat-admin" data-cat="admin" href="https://kou-no1.github.io/thumb_print/" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">🗂️</div>
+          <span class="tag tag-admin">校務</span>
+        </div>
+        <div class="card-title">画像サムネイル一覧</div>
+        <div class="card-desc">顔写真を一覧表示。ファイル名（名前）も自動表示</div>
+      </a>
+      <a class="card cat-admin" data-cat="admin" href="https://docs.google.com/spreadsheets/d/1FrG-074jh6DY0UJiozhYV4tHdFLVqdb56g-YCtk2JOY/edit?gid=1391553984#gid=1391553984" target="_blank">
+        <div class="card-top">
+          <div class="icon-wrap">💰</div>
+          <span class="tag tag-admin">校務</span>
+        </div>
+        <div class="card-title">学年会計システム</div>
+        <div class="card-desc">学年のお金の管理をスプレッドシートで一元化</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>各アプリはブラウザ内で動作します &nbsp;·&nbsp; 個人情報はサーバーに送信されません</p>
+  </div>
+
+</div>
+
+<script>
+  const btns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.card');
+  const sections = document.querySelectorAll('.section-block');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+
+      cards.forEach(card => {
+        if (filter === 'all' || card.dataset.cat === filter) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      sections.forEach(sec => {
+        const visibleCards = sec.querySelectorAll('.card:not(.hidden)');
+        sec.classList.toggle('hidden', visibleCards.length === 0);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
